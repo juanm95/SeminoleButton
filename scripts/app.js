@@ -1,45 +1,57 @@
-Number.prototype.pad = function (size) {
-    var s = String(this);
-    while (s.length < (size || 2)) {
-        s = "0" + s;
-    }
-    return s;
-}
-
-function updateAll() {
-    var pre = document.getElementById("preDistance")
-    var post = document.getElementById("postDistance")
-    var convertTo = document.getElementById("myonoffswitch").checked;
-    var distance = parseInt($("#units").get(0).value);
-    if (convertTo) {
-        pre.innerHTML = distance
-        post.innerHTML = distance * 1.06
-    } else {
-        pre.innerHTML = distance * 1.06
-        post.innerHTML = distance
-    }
-
-    // Time conversion
-    pre = document.getElementById("preTime")
-    post = document.getElementById("postTime")
+function convertTimesToSeminole(event) {
+    var units = $("#units").get(0).value;
+    var distance = parseInt($("#distance").get(0).value);
     var minutes = parseInt($("#minutes").get(0).value);
     var seconds = parseInt($("#seconds").get(0).value);
     var centi = parseInt($("#milliseconds").get(0).value);
     var multiplier;
-    multiplier = 1.065;
-    pre.innerHTML = "" + minutes + ":" + seconds.pad() + ":" + centi.pad()
-    seconds = minutes * 60 + seconds + centi * .01;
-    if (convertTo) {
-        seconds *= multiplier;
+    if (units === "Yards") {
+        multiplier = 1.165;
     } else {
-        seconds /= multiplier;
+        multiplier = 1.065;
     }
+    seconds = minutes * 60 + seconds + centi * .01;
+    seconds *= multiplier;
     minutes = Math.trunc(seconds / 60);
     seconds -= minutes * 60;
-    centi = seconds - Math.trunc(seconds);
-    seconds -= centi
-    centi = centi * 100
-    centi = Math.trunc(centi)
-    post.innerHTML = "" + minutes + ":" + seconds.pad() + ":" + centi.pad()
+    if (parseInt(distance) == 1) {
+        units = units.slice(0, -1);
+    }
+    $("#resultCardTo .repeatDistance").html(distance.toString() + " " + units);
+    if (minutes == 0) {
+        $("#resultCardTo .result").html(seconds.toFixed(2) + " seconds");
+    } else {
+        $("#resultCardTo .result").html(minutes + " minutes and " + seconds.toFixed(2) + " seconds");
+    }
+    $("#resultCardTo").openModal();
+    return false;
+}
+
+function convertTimesFromSeminole(event) {
+    var units = $("#units").get(0).value;
+    var distance = parseInt($("#distance").get(0).value);
+    var minutes = parseInt($("#minutes").get(0).value);
+    var seconds = parseInt($("#seconds").get(0).value);
+    var centi = parseInt($("#milliseconds").get(0).value);
+    var multiplier;
+    if (units === "Yards") {
+        multiplier = 1.165;
+    } else {
+        multiplier = 1.065;
+    }
+    seconds = minutes * 60 + seconds + centi * .01;
+    seconds /= multiplier;
+    minutes = Math.trunc(seconds / 60);
+    seconds -= minutes * 60;
+    if (parseInt(distance) == 1) {
+        units = units.slice(0, -1);
+    }
+    $("#resultCardFrom .repeatDistance").html(distance.toString() + " " + units);
+    if (minutes == 0) {
+        $("#resultCardFrom .result").html(seconds.toFixed(2) + " seconds");
+    } else {
+        $("#resultCardFrom .result").html(minutes + " minutes and " + seconds.toFixed(2) + " seconds");
+    }
+    $("#resultCardFrom").openModal();
     return false;
 }
